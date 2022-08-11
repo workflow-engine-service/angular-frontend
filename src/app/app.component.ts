@@ -1,5 +1,6 @@
 import { Component, ViewChild, ViewContainerRef } from '@angular/core';
 import { NbThemeService } from '@nebular/theme';
+import { SettingsService } from './services/settings.service';
 import { StrongFBHttpService } from './StrongFB/services/StrongFB-http.service';
 import { StrongFBService } from './StrongFB/services/StrongFB.service';
 
@@ -9,12 +10,14 @@ import { StrongFBService } from './StrongFB/services/StrongFB.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  bootLoading = true;
   @ViewChild('serviceRef', { read: ViewContainerRef }) ServiceRef: ViewContainerRef;
 
   constructor(private themeService: NbThemeService, public http: StrongFBHttpService, private srv: StrongFBService) {
+    SettingsService.load();
     this.http.configs({
-      apiEndpoint: 'http://localhost:8082/api/v1',
-      authenticationHeaderName: 'Authorization',
+      apiEndpoint: SettingsService.API_ENDPOINT,
+      authenticationHeaderName: SettingsService.AUTH_HEADER_NAME,
       getRefreshTokenApi: async (_http) => {
         return {
           access_token: '',
@@ -23,10 +26,18 @@ export class AppComponent {
       },
       refreshTokenKey: 'refresh_token',
       tokenKey: 'access_token',
-      updateInterval: 1000,
+      updateInterval: SettingsService.UPDATE_STATE_INTERVAL,
       loginPath: '/login',
     });
     // this.themeService.changeTheme('dark');
+  }
+
+  ngOnInit(): void {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+    // =>remove boot loader
+    document.getElementById('_boot_global_loading_').style.display = 'none';
+    this.bootLoading = false;
   }
 
   ngAfterViewInit(): void {

@@ -18,11 +18,11 @@ const routes: Routes = [
     component: HomePageComponent,
     data: { page: 'workers' }
   },
-  {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: 'dashboard'
-  }
+  // {
+  //   path: '',
+  //   pathMatch: 'full',
+  //   redirectTo: 'dashboard'
+  // }
 ];
 
 @NgModule({
