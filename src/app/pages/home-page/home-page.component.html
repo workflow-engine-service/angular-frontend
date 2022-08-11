@@ -1,0 +1,21 @@
+<nb-layout>
+    <nb-layout-header subheader>
+
+        <a href="#" (click)="toggle()">
+            <nb-icon icon="menu-2-outline"></nb-icon>
+        </a>
+    </nb-layout-header>
+
+    <nb-sidebar [fixed]="false" [start]="true" [containerFixed]="true">
+        <nb-sidebar-header>
+            <h1 class="logo" *ngIf="showLogo">Workflow Frontend</h1>
+        </nb-sidebar-header>
+        <nb-menu [items]="items">
+        </nb-menu>
+    </nb-sidebar>
+
+    <nb-layout-column class="colored-column-basic">
+        <dashboard-page *ngIf="page === 'dashboard'"></dashboard-page>
+        <workers-page *ngIf="page === 'workers'"></workers-page>
+    </nb-layout-column>
+</nb-layout>
