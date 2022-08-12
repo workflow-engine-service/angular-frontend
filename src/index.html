@@ -9,7 +9,11 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <style>
     body {
-      background: #333;
+      background: #1b1b38;
+    }
+
+    .boot-loader {
+      background: #1b1b38;
       display: flex;
       width: 100vw;
       height: 100vh;
@@ -17,23 +21,28 @@
       align-items: center;
       padding: 0px;
       margin: 0px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
     }
 
-    body .container {
+    .boot-loader .container {
       width: 112px;
       height: 112px;
     }
 
-    body .container .box1,
-    body .container .box2,
-    body .container .box3 {
+    .boot-loader .container .box1,
+    .boot-loader .container .box2,
+    .boot-loader .container .box3 {
       border: 16px solid #f5f5f5;
       box-sizing: border-box;
       position: absolute;
       display: block;
     }
 
-    body .container .box1 {
+    .boot-loader .container .box1 {
       width: 112px;
       height: 48px;
       margin-top: 64px;
@@ -42,7 +51,7 @@
       animation: anime1 4s 0s forwards ease-in-out infinite;
     }
 
-    body .container .box2 {
+    .boot-loader .container .box2 {
       width: 48px;
       height: 48px;
       margin-top: 0px;
@@ -51,7 +60,7 @@
       animation: anime2 4s 0s forwards ease-in-out infinite;
     }
 
-    body .container .box3 {
+    .boot-loader .container .box3 {
       width: 48px;
       height: 48px;
       margin-top: 0px;
@@ -453,10 +462,12 @@
 </head>
 
 <body>
-  <div class="container " id="_boot_global_loading_">
-    <div class="box1"></div>
-    <div class="box2"></div>
-    <div class="box3"></div>
+  <div class="boot-loader" id="_boot_global_loading_">
+    <div class="container">
+      <div class="box1"></div>
+      <div class="box2"></div>
+      <div class="box3"></div>
+    </div>
   </div>
   <app-root></app-root>
   <!-- <script src="/assets/js/configs.js"></script> -->

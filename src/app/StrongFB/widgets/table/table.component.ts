@@ -45,6 +45,9 @@ export class StrongFBTabledWidgetComponent extends StrongFBBaseWidget<TableSchem
             let displayRow = {};
             for (const col of this.schema.columns) {
                 if (col.type === 'actions') displayRow[col.name] = [];
+                else if (col.type === 'tagsList') {
+                    displayRow[col.name] = [];
+                }
                 else {
                     displayRow[col.name] = '...';
                 }
@@ -93,7 +96,7 @@ export class StrongFBTabledWidgetComponent extends StrongFBBaseWidget<TableSchem
                 }
                 // =>check for column map function
                 else if (col.mapValue) {
-                    this.displayRows[i][col.name] = await col.mapValue.call(this.widgetForm, this.simpleRows[i], i, this.widgetHeader);;
+                    this.displayRows[i][col.name] = await col.mapValue.call(this.widgetForm, this.simpleRows[i], i, this.widgetHeader);
                 }
                 // =>set simple row value
                 else {

@@ -8,7 +8,7 @@ import { NbMenuItem, NbSidebarService } from '@nebular/theme';
   styleUrls: ['./home-page.component.scss']
 })
 export class HomePageComponent implements OnInit {
-  page: 'dashboard' | 'workers';
+  page: 'dashboard' | 'workers' | 'admin_users' | 'admin_workflows' | 'admin_workflow_visualize';
   showLogo = true;
   items: NbMenuItem[] = [
     {
@@ -27,6 +27,33 @@ export class HomePageComponent implements OnInit {
         page: 'workers'
       },
     },
+    {
+      title: 'Admin Area',
+      icon: 'shield-outline',
+      data: {
+        is_admin: true,
+      },
+      children: [
+        {
+          title: 'users',
+          icon: 'people-outline',
+          link: '/admin/users',
+          data: {
+            page: 'admin_users',
+            is_admin: true,
+          },
+        },
+        {
+          title: 'workflows',
+          icon: 'folder-outline',
+          link: '/admin/workflow/list',
+          data: {
+            page: 'admin_workflows',
+            is_admin: true,
+          },
+        },
+      ]
+    }
   ];
 
 

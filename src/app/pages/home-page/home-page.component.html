@@ -17,5 +17,8 @@
     <nb-layout-column class="colored-column-basic">
         <dashboard-page *ngIf="page === 'dashboard'"></dashboard-page>
         <workers-page *ngIf="page === 'workers'"></workers-page>
+        <admin-users-page *ngIf="page === 'admin_users'"></admin-users-page>
+        <admin-workflows-page *ngIf="page === 'admin_workflows'"></admin-workflows-page>
+        <admin-workflow-diagram-page *ngIf="page === 'admin_workflow_visualize'"></admin-workflow-diagram-page>
     </nb-layout-column>
 </nb-layout>

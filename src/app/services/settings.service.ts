@@ -8,7 +8,7 @@ declare var _global_configs_: object;
   providedIn: 'root'
 })
 export class SettingsService {
-  static VERSION = '0.2';
+  static VERSION = '0.3';
   static UPDATE_STATE_INTERVAL = 1000;
   static API_ENDPOINT = 'http://localhost:8082/api/v1';
   static AUTH_HEADER_NAME = 'Authorization';

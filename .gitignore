@@ -4,6 +4,7 @@
 /tmp
 /out-tsc
 /bazel-out
+strong_form_builder/
 
 # Node
 /node_modules

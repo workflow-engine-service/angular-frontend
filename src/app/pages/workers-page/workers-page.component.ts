@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StrongFBFormClass } from 'src/app/StrongFB/common/StrongFB-base';
-import { WorkersPageForm } from 'src/app/StrongFB/forms/workers-page.form';
+import { WorkersPageForm } from 'src/app/StrongFB/forms/pages/workers-page.form';
 import { StrongFBService } from 'src/app/StrongFB/services/StrongFB.service';
 
 @Component({

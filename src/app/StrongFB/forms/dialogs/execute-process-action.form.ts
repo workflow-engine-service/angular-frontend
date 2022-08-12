@@ -1,9 +1,9 @@
 import { Validators } from "@angular/forms";
-import { StrongFBFormClass } from "../common/StrongFB-base";
-import { StrongFBValidator } from "../common/StrongFB-validator";
-import { StrongFBFormFieldWidget } from "../widgets/form-field/form-field.header";
-import { StrongFBInputWidget } from "../widgets/input/input.header";
-import { StrongFBTextAreaWidget } from "../widgets/textarea/textarea.header";
+import { StrongFBFormClass } from "../../common/StrongFB-base";
+import { StrongFBValidator } from "../../common/StrongFB-validator";
+import { StrongFBFormFieldWidget } from "../../widgets/form-field/form-field.header";
+import { StrongFBInputWidget } from "../../widgets/input/input.header";
+import { StrongFBTextAreaWidget } from "../../widgets/textarea/textarea.header";
 
 type widgets = 'cartableTable' | 'refreshButton';
 

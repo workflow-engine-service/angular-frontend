@@ -12,6 +12,9 @@ import { StrongFBModule } from './StrongFB/StrongFB.module';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { DashboardPageComponent } from './pages/dashboard-page/dashboard-page.component';
 import { WorkersPageComponent } from './pages/workers-page/workers-page.component';
+import { UsersPageComponent } from './pages/admin/users-page/users-page.component';
+import { WorkflowsPageComponent } from './pages/admin/workflows-page/workflows-page.component';
+import { WorkflowDiagramPageComponent } from './pages/admin/workflow-diagram-page/workflow-diagram-page.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +22,10 @@ import { WorkersPageComponent } from './pages/workers-page/workers-page.componen
     LoginPageComponent,
     HomePageComponent,
     DashboardPageComponent,
-    WorkersPageComponent
+    WorkersPageComponent,
+    UsersPageComponent,
+    WorkflowsPageComponent,
+    WorkflowDiagramPageComponent
   ],
   imports: [
     BrowserModule,

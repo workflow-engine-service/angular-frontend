@@ -1,10 +1,10 @@
-import { StrongFBFormClass } from "../common/StrongFB-base";
-import { StrongFBWidget } from "../common/StrongFB-decorators";
-import { StrongFBButtonWidget } from "../widgets/button/button.header";
-import { StrongFBCardWidget } from "../widgets/card/card.header";
-import { StrongFBFormFieldWidget } from "../widgets/form-field/form-field.header";
-import { InputSchema } from "../widgets/input/input-interfaces";
-import { StrongFBInputWidget } from "../widgets/input/input.header";
+import { StrongFBFormClass } from "../../common/StrongFB-base";
+import { StrongFBWidget } from "../../common/StrongFB-decorators";
+import { StrongFBButtonWidget } from "../../widgets/button/button.header";
+import { StrongFBCardWidget } from "../../widgets/card/card.header";
+import { StrongFBFormFieldWidget } from "../../widgets/form-field/form-field.header";
+import { InputSchema } from "../../widgets/input/input-interfaces";
+import { StrongFBInputWidget } from "../../widgets/input/input.header";
 
 type widgets = 'usernameField' | 'passwordField' | 'loginButton' | 'loginCard' | 'passwordInput';
 /**

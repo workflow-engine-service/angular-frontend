@@ -1,9 +1,8 @@
-import { StrongFBFormClass } from "../common/StrongFB-base";
-import { StrongFBLayoutBuilder } from "../common/StrongFB-layout-builder";
-import { StrongFBButtonWidget } from "../widgets/button/button.header";
-import { TableColumnAction, TableTagColumnMapValue } from "../widgets/table/table-interfaces";
-import { StrongFBTableWidget } from "../widgets/table/table.header";
-import { ExecuteProcessActionForm } from "./execute-process-action.form";
+import { StrongFBFormClass } from "../../common/StrongFB-base";
+import { StrongFBLayoutBuilder } from "../../common/StrongFB-layout-builder";
+import { StrongFBButtonWidget } from "../../widgets/button/button.header";
+import { TableColumnAction, TableTagColumnMapValue } from "../../widgets/table/table-interfaces";
+import { StrongFBTableWidget } from "../../widgets/table/table.header";
 
 type widgets = 'workersTable' | 'refreshButton';
 

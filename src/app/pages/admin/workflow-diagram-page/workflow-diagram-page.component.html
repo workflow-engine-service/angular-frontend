@@ -1,0 +1,8 @@
+<header>
+    <h1>{{workflowName}} - v{{workflowVersion}}</h1>
+    <div class="actions">
+        <button *ngIf="flowChartText" (click)="export()" nbButton>Export</button>
+    </div>
+</header>
+<hr>
+<div class="mermaid" id="mermaid_flowchart"></div>

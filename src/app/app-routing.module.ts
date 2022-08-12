@@ -5,6 +5,11 @@ import { LoginPageComponent } from './pages/login-page/login-page.component';
 
 const routes: Routes = [
   {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'dashboard'
+  },
+  {
     path: 'login',
     component: LoginPageComponent,
   },
@@ -18,11 +23,33 @@ const routes: Routes = [
     component: HomePageComponent,
     data: { page: 'workers' }
   },
-  // {
-  //   path: '',
-  //   pathMatch: 'full',
-  //   redirectTo: 'dashboard'
-  // }
+  {
+    path: 'admin',
+    children: [
+      {
+        path: 'users',
+        component: HomePageComponent,
+        data: { page: 'admin_users' }
+      },
+      {
+        path: 'workflow',
+        children: [
+          {
+            path: 'list',
+            component: HomePageComponent,
+            data: { page: 'admin_workflows' },
+          },
+          {
+            path: 'visualize',
+            component: HomePageComponent,
+            data: { page: 'admin_workflow_visualize' }
+          },
+
+        ]
+      },
+    ]
+  },
+
 ];
 
 @NgModule({

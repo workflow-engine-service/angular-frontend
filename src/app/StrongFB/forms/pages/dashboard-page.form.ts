@@ -1,9 +1,10 @@
-import { StrongFBFormClass } from "../common/StrongFB-base";
-import { StrongFBLayoutBuilder } from "../common/StrongFB-layout-builder";
-import { StrongFBButtonWidget } from "../widgets/button/button.header";
-import { TableColumnAction, TableTagColumnMapValue } from "../widgets/table/table-interfaces";
-import { StrongFBTableWidget } from "../widgets/table/table.header";
-import { ExecuteProcessActionForm } from "./execute-process-action.form";
+import { StrongFBFormClass } from "../../common/StrongFB-base";
+import { StrongFBLayoutBuilder } from "../../common/StrongFB-layout-builder";
+import { StrongFBButtonWidget } from "../../widgets/button/button.header";
+import { TableColumnAction, TableTagColumnMapValue } from "../../widgets/table/table-interfaces";
+import { StrongFBTableWidget } from "../../widgets/table/table.header";
+import { CreateProcessForm } from "../dialogs/create-process.form";
+import { ExecuteProcessActionForm } from "../dialogs/execute-process-action.form";
 
 type widgets = 'cartableTable' | 'refreshButton';
 
@@ -17,15 +18,55 @@ export class DashboardPageForm extends StrongFBFormClass<widgets> {
         return this.layoutBuilder().columnBox().layout([
             this.layoutBuilder().gridBox()
                 .gridColumnLayout({ desktop: 'col-9' }, this.layoutBuilder().box({ html: `<h1>Dashboard</h1>` }).id('dashboard_text').finish())
-                .gridColumnLayout({ desktop: 'col-3' }, this.layoutBuilder().rowBox().styleCss('flex-direction', 'row-reverse').widget(this.refreshButton).finish())
+                .gridColumnLayout({ desktop: 'col-3' }, this.layoutBuilder().rowBox().styleCss('flex-direction', 'row-reverse').widget([this.refreshButton, this.addButton]).finish())
                 .finish(),
             this.layoutBuilder().box().widget(this.cartableTable).finish(),
-        ]).finish()
+        ]).finish();
     }
 
     refreshButton() {
-        return new StrongFBButtonWidget().icon('refresh-outline').mode('iconButton').appearance('colorful').status('warning').click(() => {
+        return new StrongFBButtonWidget().icon('refresh-outline').mode('iconButton').appearance('colorful').status('warning').tooltip('Refresh').click(() => {
             this.findWidgetByName<StrongFBTableWidget>('cartableTable').updateRows();
+        });
+    }
+
+    addButton() {
+        return new StrongFBButtonWidget().icon('plus-outline').mode('iconButton').appearance('colorful').status('success').tooltip('Create new Process').margin2x('0', '0.5em').click(async () => {
+            (await this.service.dialog(CreateProcessForm, {
+                title: 'Create new Process',
+                actions: [
+                    {
+                        text: 'Create',
+                        status: 'success',
+                        action: async (values) => {
+                            console.log('process values:', values)
+                            if (!values || !values['workflow_selected']) return false;
+                            let workflow = values['workflow_selected'].split('@');
+                            // =>call api to create process
+                            let res = await this.http.post('/workflow/create', {
+                                name: workflow[0],
+                                version: Number(workflow[1])
+                            });
+                            // =>if failed
+                            if (res.error) {
+                                this.notify(res.error['data'], 'failure');
+                            }
+                            // =>if success
+                            if (res.result && res.result['data']) {
+                                // console.log('add process:', res.result);
+                                // =>update dashboard
+                                this.findWidgetByName<StrongFBTableWidget>('cartableTable').updateRows();
+                                return true;
+                            }
+
+                            return true;
+                        }
+                    },
+                    {
+                        isCancel: true,
+                    }
+                ]
+            })).instance.open();
         });
     }
 
