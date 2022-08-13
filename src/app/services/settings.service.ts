@@ -10,7 +10,9 @@ declare var _global_configs_: object;
 export class SettingsService {
   static VERSION = '0.3';
   static UPDATE_STATE_INTERVAL = 1000;
-  static API_ENDPOINT = 'http://localhost:8082/api/v1';
+
+  static ASSETS_BASE_URL = '/assets';
+  static API_ENDPOINT = 'http://localhost:8083/api/v1';
   static AUTH_HEADER_NAME = 'Authorization';
   static REQUEST_TIMEOUT = 30000;
   static ENABLE_DEBUG_LOGS = true;

@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { StrongFBHttpService } from 'src/app/StrongFB/services/StrongFB-http.service';
 import { StrongFBService } from 'src/app/StrongFB/services/StrongFB.service';
 import * as saveSvgAsPng from 'save-svg-as-png';
+import { SettingsService } from 'src/app/services/settings.service';
 
 
 declare var mermaid;
@@ -54,7 +55,7 @@ export class WorkflowDiagramPageComponent implements OnInit {
   }
 
   async generateFLowChart() {
-    await this.strongfb.loadScript('./assets/mermaid.min.js');
+    await this.strongfb.loadScript(SettingsService.ASSETS_BASE_URL + '/mermaid.min.js');
     // await this.strongfb.loadScript('./assets/raphael.sketchpad.js');
 
     let flowChart = `
