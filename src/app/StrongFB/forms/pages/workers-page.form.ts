@@ -81,7 +81,10 @@ export class WorkersPageForm extends StrongFBFormClass<widgets> {
             //         alert('hello history');
             //     }
             // },
-        ]);
+        ]).mapPaginationByApi({
+            pageSize: 5,
+            pageCountResponse: 'pagination.page_count',
+        });
     }
 
 }

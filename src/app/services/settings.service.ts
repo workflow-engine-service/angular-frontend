@@ -8,11 +8,12 @@ declare var _global_configs_: object;
   providedIn: 'root'
 })
 export class SettingsService {
-  static VERSION = '0.3';
+  static VERSION = '0.4';
   static UPDATE_STATE_INTERVAL = 1000;
 
   static ASSETS_BASE_URL = '/assets';
   static API_ENDPOINT = 'http://localhost:8083/api/v1';
+  //'http://192.168.31.178:8082/api/v1'
   static AUTH_HEADER_NAME = 'Authorization';
   static REQUEST_TIMEOUT = 30000;
   static ENABLE_DEBUG_LOGS = true;

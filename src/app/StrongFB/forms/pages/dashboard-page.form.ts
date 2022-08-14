@@ -182,6 +182,9 @@ export class DashboardPageForm extends StrongFBFormClass<widgets> {
             }
             return actions;
 
+        }).mapPaginationByApi({
+            pageSize: 10,
+            pageCountResponse: 'pagination.page_count',
         });
     }
 
