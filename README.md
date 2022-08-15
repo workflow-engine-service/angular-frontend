@@ -5,7 +5,7 @@ A simple frontend for testing and using in production mode.
 
 ## Configure
 
-you can set your global configs into `src/
+you can set your global configs into `src/`
 
 ## Development server
 
