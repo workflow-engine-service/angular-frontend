@@ -127,6 +127,9 @@ export class AdminUsersPageForm extends StrongFBFormClass<widgets, object, InitD
             //         alert('hello history');
             //     }
             // },
-        ]);
+        ]).mapPaginationByApi({
+            pageSize: 10,
+            pageCountResponse: 'pagination.page_count',
+        });;
     }
 }

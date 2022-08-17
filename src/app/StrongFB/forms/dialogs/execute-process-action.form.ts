@@ -1,6 +1,7 @@
 import { Validators } from "@angular/forms";
 import { StrongFBFormClass } from "../../common/StrongFB-base";
 import { StrongFBValidator } from "../../common/StrongFB-validator";
+import { StrongFBFileUploaderWidget } from "../../widgets/file-uploader/file-uploader.header";
 import { StrongFBFormFieldWidget } from "../../widgets/form-field/form-field.header";
 import { StrongFBInputWidget } from "../../widgets/input/input.header";
 import { StrongFBTextAreaWidget } from "../../widgets/textarea/textarea.header";
@@ -19,10 +20,11 @@ interface InitData {
 
 
 export class ExecuteProcessActionForm extends StrongFBFormClass<widgets, object, InitData> {
-    required_fields: { name: string; type: 'string' }[] = [];
+    required_fields: { name: string; type: 'string'; validation?: { type: string; value?: string[] | number }[] }[] = [];
+    message_required = false;
     override get layout() {
         return this.layoutBuilder().columnBox().layout([
-            this.layoutBuilder().columnBox().widgets(this.requiredFields).widget(this.messageField).finish(),
+            this.layoutBuilder().columnBox().widgets(this.requiredFields).finish(),
         ]).finish();
     }
 
@@ -55,12 +57,23 @@ export class ExecuteProcessActionForm extends StrongFBFormClass<widgets, object,
                         .validator(new StrongFBValidator().required())
                 );
             }
+            else if (field.type === 'file') {
+                let fileWidget = new StrongFBFileUploaderWidget()
+                    .formFieldName(field.name);
+
+                if (field.validation) {
+                    if (field.validation.find(i => i.type === 'file_type')) {
+                        fileWidget.accept(field.validation.find(i => i.type === 'file_type').value as any)
+                    }
+                }
+                fields.push(new StrongFBFormFieldWidget()
+                    .field(fileWidget).label(field.name).validator(new StrongFBValidator().required()));
+            }
         }
+
+        fields.push(new StrongFBFormFieldWidget().label('Message').field(new StrongFBTextAreaWidget().placeholder('message ...').formFieldName('message').maxWidth('600px')).validator(this.message_required ? new StrongFBValidator().required() : undefined));
 
         return fields;
     }
 
-    messageField() {
-        return new StrongFBTextAreaWidget().placeholder('message ...').formFieldName('message').maxWidth('600px');
-    }
 }

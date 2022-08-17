@@ -1,9 +1,14 @@
 <nb-layout>
     <nb-layout-header subheader>
-
-        <a href="#" (click)="toggle()">
-            <nb-icon icon="menu-2-outline"></nb-icon>
-        </a>
+        <div class="header">
+            <nb-user [name]="userInfo?.name" [title]="userInfo?.email?? ''" [nbContextMenu]="profileItems"
+                nbContextMenuTag="profileItems">
+            </nb-user>
+            <div class="spacer"></div>
+            <a href="#" (click)="toggle()">
+                <nb-icon icon="menu-2-outline"></nb-icon>
+            </a>
+        </div>
     </nb-layout-header>
 
     <nb-sidebar [fixed]="false" [start]="true" [containerFixed]="true">

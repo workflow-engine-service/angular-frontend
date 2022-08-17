@@ -43,12 +43,19 @@ export class LoginPageForm extends StrongFBFormClass<widgets, loginFormFields> {
                 this.passwordField,
             ]).finish()).footer(this.layoutBuilder().rowBox().widget(this.loginButton).finish());
     }
+
     usernameField() {
-        return new StrongFBFormFieldWidget().field(new StrongFBInputWidget<loginFormFields>().placeholder('username').formFieldName('username'));
+        return new StrongFBFormFieldWidget().field(new StrongFBInputWidget<loginFormFields>().placeholder('username').formFieldName('username').keyup.enter(() => {
+            this.loginAction();
+        }));
     }
 
     passwordField() {
-        return new StrongFBFormFieldWidget().field(new StrongFBInputWidget<loginFormFields>().type('password').formFieldName('password').name('passwordInput').placeholder('password')).suffixButton(new StrongFBButtonWidget().icon('eye-outline').mode('icon').click((ev, self) => {
+        return new StrongFBFormFieldWidget().field(
+            new StrongFBInputWidget<loginFormFields>().type('password').formFieldName('password').name('passwordInput').placeholder('password').keyup.enter(() => {
+                this.loginAction();
+            })
+        ).suffixButton(new StrongFBButtonWidget().icon('eye-outline').mode('icon').click((ev, self) => {
             // console.log(this['_usedWidgets'])
             if (this.showPassword) {
                 self.icon('eye-outline');
@@ -65,21 +72,25 @@ export class LoginPageForm extends StrongFBFormClass<widgets, loginFormFields> {
 
     loginButton() {
         return new StrongFBButtonWidget().name('loginButton').text('Login').appearance('colorful').status('primary').click(async (ev, self) => {
-            let res = await this.http.post('/token', {
-                username: this.formFieldValues().username,
-                secret_key: this.formFieldValues().password,
-            });
-            console.log(res)
-            // =>if success
-            if (res && res.statusCode < 300) {
-                this.http.setToken(res.result.data.access_token);
-                this.http.setRefreshToken(res.result.data.refresh_token);
-                this.service.goToPage('dashboard');
-            }
-            // =>if failed
-            else {
-                this.notify('username or password is not valid!', 'failure');
-            }
+            this.loginAction();
         });
+    }
+
+    async loginAction() {
+        let res = await this.http.post('/token', {
+            username: this.formFieldValues().username,
+            secret_key: this.formFieldValues().password,
+        });
+        console.log(res)
+        // =>if success
+        if (res && res.statusCode < 300) {
+            this.http.setToken(res.result.data.access_token);
+            this.http.setRefreshToken(res.result.data.refresh_token);
+            this.service.goToPage('dashboard');
+        }
+        // =>if failed
+        else {
+            this.notify('username or password is not valid!', 'failure');
+        }
     }
 }

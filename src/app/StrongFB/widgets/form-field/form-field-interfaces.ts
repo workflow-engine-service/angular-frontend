@@ -2,18 +2,21 @@ import { StrongFBValidator } from "../../common/StrongFB-validator";
 import { StrongFBBaseWidgetHeader } from "../../common/StrongFB-widget-header";
 import { ButtonSchema } from "../button/button-interfaces";
 import { StrongFBButtonWidget } from "../button/button.header";
+import { StrongFBFileUploaderWidget } from "../file-uploader/file-uploader.header";
 import { StrongFBInputWidget } from "../input/input.header";
 import { StrongFBRadioBoxWidget } from "../radio-box/radio-box.header";
 import { StrongFBSelectWidget } from "../select/select.header";
 import { StrongFBTagsListWidget } from "../tags-list/tags-list.header";
 import { StrongFBTextAreaWidget } from "../textarea/textarea.header";
+import { StrongFBToggleWidget } from "../toggle/toggle.header";
 
 
 
 export type FormFieldSize = 'small' | 'medium' | 'large';
 
 
-export type FormFieldType = StrongFBInputWidget | StrongFBTextAreaWidget | StrongFBSelectWidget | StrongFBTagsListWidget | StrongFBRadioBoxWidget;
+export type FormFieldType = StrongFBInputWidget | StrongFBTextAreaWidget | StrongFBSelectWidget | StrongFBTagsListWidget | StrongFBRadioBoxWidget | StrongFBFileUploaderWidget |
+    StrongFBToggleWidget;
 
 export interface FormFieldSchema {
 

@@ -1,6 +1,11 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NbMenuItem, NbSidebarService } from '@nebular/theme';
+import { NbMenuItem, NbMenuService, NbSidebarService } from '@nebular/theme';
+import { filter } from 'rxjs';
+import { SettingsService } from 'src/app/services/settings.service';
+import { StrongFBHttpService } from 'src/app/StrongFB/services/StrongFB-http.service';
+// import { StrongFBHttpService } from 'strong_form_builder/data/templates/services/StrongFB-http.service';
 
 @Component({
   selector: 'app-home-page',
@@ -10,6 +15,13 @@ import { NbMenuItem, NbSidebarService } from '@nebular/theme';
 export class HomePageComponent implements OnInit {
   page: 'dashboard' | 'workers' | 'admin_users' | 'admin_workflows' | 'admin_workflow_visualize';
   showLogo = true;
+  userInfo: {
+    id: number;
+    name: string;
+    is_admin: boolean;
+    email?: string;
+    roles: string[];
+  };
   items: NbMenuItem[] = [
     {
       title: 'Dashboard',
@@ -30,6 +42,7 @@ export class HomePageComponent implements OnInit {
     {
       title: 'Admin Area',
       icon: 'shield-outline',
+      // hidden: true,
       data: {
         is_admin: true,
       },
@@ -58,23 +71,59 @@ export class HomePageComponent implements OnInit {
 
 
 
+  profileItems: NbMenuItem[] = [
+    {
+      title: 'profile',
+      hidden: true,
+    },
+    {
+      title: 'Logout',
+      data: { type: 'logout' }
+    },
+
+
+  ];
+
+
   constructor(
     private sidebarService: NbSidebarService,
-    private _route: ActivatedRoute
+    private _route: ActivatedRoute,
+    private _http: StrongFBHttpService,
+    private _menuService: NbMenuService
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    // =>get user info
+    this.userInfo = (await this._http.get('/user/info')).result['data'];
+    console.log('user:', this.userInfo);
+    // this._menuService.addItems([
+    // ])
+
+    this._menuService.onItemClick()
+      .pipe(filter(({ tag }) => tag === 'profileItems'))
+      .subscribe(bag => {
+        console.log(bag)
+        if (bag.item.data.type === 'logout') {
+          this._http.resetTokens();
+          this._http.redirectLogin();
+        }
+      });
+
     this._route.data.subscribe((it) => {
       if (!it) return;
       this.page = it['page'] as any;
       for (const item of this.items) {
         item.selected = false;
+        if (item.data['is_admin']) {
+          item.hidden = !this.userInfo?.is_admin;
+        }
         if (item.data && item.data['page'] === this.page) {
           item.selected = true;
         }
       }
       // alert(this.page)
-    })
+    });
+
   }
 
   toggle() {
@@ -82,5 +131,7 @@ export class HomePageComponent implements OnInit {
     this.showLogo = !this.showLogo;
     return false;
   }
+
+
 
 }

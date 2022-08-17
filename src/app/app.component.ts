@@ -11,6 +11,7 @@ import { StrongFBService } from './StrongFB/services/StrongFB.service';
 })
 export class AppComponent {
   bootLoading = true;
+  version = SettingsService.VERSION;
   @ViewChild('serviceRef', { read: ViewContainerRef }) ServiceRef: ViewContainerRef;
 
   constructor(private themeService: NbThemeService, public http: StrongFBHttpService, private srv: StrongFBService) {
