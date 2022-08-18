@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NbThemeModule, NbLayoutModule, NbSidebarModule, NbButtonModule, NbMenuModule, NbIconModule, NbUserModule, NbContextMenuModule } from '@nebular/theme';
+import { NbThemeModule, NbLayoutModule, NbSidebarModule, NbButtonModule, NbMenuModule, NbIconModule, NbUserModule, NbContextMenuModule, NbSelectModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { RouterModule } from '@angular/router';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
@@ -15,6 +15,7 @@ import { WorkersPageComponent } from './pages/workers-page/workers-page.componen
 import { UsersPageComponent } from './pages/admin/users-page/users-page.component';
 import { WorkflowsPageComponent } from './pages/admin/workflows-page/workflows-page.component';
 import { WorkflowDiagramPageComponent } from './pages/admin/workflow-diagram-page/workflow-diagram-page.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,8 @@ import { WorkflowDiagramPageComponent } from './pages/admin/workflow-diagram-pag
     StrongFBModule,
     NbUserModule,
     NbContextMenuModule,
+    NbSelectModule,
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

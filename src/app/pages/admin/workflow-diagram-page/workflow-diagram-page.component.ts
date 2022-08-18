@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { StrongFBHttpService } from 'src/app/StrongFB/services/StrongFB-http.service';
 import { StrongFBService } from 'src/app/StrongFB/services/StrongFB.service';
-import * as saveSvgAsPng from 'save-svg-as-png';
 import { SettingsService } from 'src/app/services/settings.service';
 
 

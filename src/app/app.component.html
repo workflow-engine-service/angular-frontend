@@ -3,13 +3,23 @@
   <!-- <nb-layout-header fixed>
   </nb-layout-header> -->
 
-  <nb-layout-column style="flex: 1 1 0;padding:0">
+  <nb-layout-column style="flex: 1 1 0;padding:0" *ngIf="configsLoaded">
     <router-outlet></router-outlet>
 
   </nb-layout-column>
 
   <nb-layout-footer fixed>
-    created by madkne and 'StrongFB' formbuilder - version {{version}}
+    <div class="footer">
+      <div class="text"> created by madkne and 'StrongFB' formbuilder - version {{version}}</div>
+      <div class="spacer"></div>
+      <div class="actions">
+        <nb-select size="tiny" [(ngModel)]="selectedLanguage" (ngModelChange)="changeLanguage()">
+          <nb-option value="en">English</nb-option>
+          <nb-option value="fa">فارسی</nb-option>
+        </nb-select>
+      </div>
+    </div>
+
   </nb-layout-footer>
 
   <ng-container #serviceRef></ng-container>

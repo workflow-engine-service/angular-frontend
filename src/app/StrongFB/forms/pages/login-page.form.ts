@@ -7,6 +7,8 @@ import { InputSchema } from "../../widgets/input/input-interfaces";
 import { StrongFBInputWidget } from "../../widgets/input/input.header";
 
 type widgets = 'usernameField' | 'passwordField' | 'loginButton' | 'loginCard' | 'passwordInput';
+
+type locales = 'login'
 /**
  * widgets:
  * card: on center of window
@@ -18,8 +20,9 @@ interface loginFormFields {
     username: string;
     password: string;
 }
-export class LoginPageForm extends StrongFBFormClass<widgets, loginFormFields> {
+export class LoginPageForm extends StrongFBFormClass<widgets, loginFormFields, object, locales> {
     showPassword = false;
+    public override defaultLocaleNamespace: "login" = 'login';
     // formFields = {
     //     username: this.fieldModel(''),
     //     password: this.fieldModel(''),
@@ -37,7 +40,7 @@ export class LoginPageForm extends StrongFBFormClass<widgets, loginFormFields> {
     }
     loginCard() {
         // console.log('this;', this)
-        return new StrongFBCardWidget().header("Workflow Engine Service Frontend").content(
+        return new StrongFBCardWidget().header(this.__("Workflow Engine Service Frontend")).content(
             this.layoutBuilder().columnBox().widget([
                 this.usernameField,
                 this.passwordField,
@@ -45,14 +48,14 @@ export class LoginPageForm extends StrongFBFormClass<widgets, loginFormFields> {
     }
 
     usernameField() {
-        return new StrongFBFormFieldWidget().field(new StrongFBInputWidget<loginFormFields>().placeholder('username').formFieldName('username').keyup.enter(() => {
+        return new StrongFBFormFieldWidget().field(new StrongFBInputWidget<loginFormFields>().placeholder(this.__('username')).formFieldName('username').keyup.enter(() => {
             this.loginAction();
         }));
     }
 
     passwordField() {
         return new StrongFBFormFieldWidget().field(
-            new StrongFBInputWidget<loginFormFields>().type('password').formFieldName('password').name('passwordInput').placeholder('password').keyup.enter(() => {
+            new StrongFBInputWidget<loginFormFields>().type('password').formFieldName('password').name('passwordInput').placeholder(this.__('password')).keyup.enter(() => {
                 this.loginAction();
             })
         ).suffixButton(new StrongFBButtonWidget().icon('eye-outline').mode('icon').click((ev, self) => {
@@ -71,7 +74,7 @@ export class LoginPageForm extends StrongFBFormClass<widgets, loginFormFields> {
     }
 
     loginButton() {
-        return new StrongFBButtonWidget().name('loginButton').text('Login').appearance('colorful').status('primary').click(async (ev, self) => {
+        return new StrongFBButtonWidget().name('loginButton').text(this.__('login')).appearance('colorful').status('primary').click(async (ev, self) => {
             this.loginAction();
         });
     }
@@ -83,7 +86,7 @@ export class LoginPageForm extends StrongFBFormClass<widgets, loginFormFields> {
         });
         console.log(res)
         // =>if success
-        if (res && res.statusCode < 300) {
+        if (res.result && res.statusCode < 300) {
             this.http.setToken(res.result.data.access_token);
             this.http.setRefreshToken(res.result.data.refresh_token);
             this.service.goToPage('dashboard');

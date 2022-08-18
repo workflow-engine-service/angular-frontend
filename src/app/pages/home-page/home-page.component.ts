@@ -94,7 +94,8 @@ export class HomePageComponent implements OnInit {
 
   async ngOnInit() {
     // =>get user info
-    this.userInfo = (await this._http.get('/user/info')).result['data'];
+    this.userInfo = (await this._http.get('/user/info'))?.result?.data;
+    if (!this.userInfo) this._http.redirectLogin();
     console.log('user:', this.userInfo);
     // this._menuService.addItems([
     // ])

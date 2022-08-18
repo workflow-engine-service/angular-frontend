@@ -8,7 +8,7 @@ declare var _global_configs_: object;
   providedIn: 'root'
 })
 export class SettingsService {
-  static VERSION = '0.6';
+  static VERSION = '0.7';
   static UPDATE_STATE_INTERVAL = 1000;
 
   static ASSETS_BASE_URL = '/assets';

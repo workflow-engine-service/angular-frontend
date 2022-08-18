@@ -11,10 +11,11 @@ type TableColumns = 'index' | '_id' | 'type' | 'started_at' | 'ended_at' | 'succ
 
 export class WorkersPageForm extends StrongFBFormClass<widgets> {
 
+    public override defaultLocaleNamespace = 'workers';
     override get layout() {
         return this.layoutBuilder().columnBox().layout([
             this.layoutBuilder().gridBox()
-                .gridColumnLayout({ desktop: 'col-9' }, this.layoutBuilder().box({ html: `<h1>Workers</h1>` }).finish())
+                .gridColumnLayout({ desktop: 'col-9' }, this.layoutBuilder().box({ html: `<h1>${this.__('Workers')}</h1>` }).finish())
                 .gridColumnLayout({ desktop: 'col-3' }, this.layoutBuilder().rowBox().styleCss('flex-direction', 'row-reverse').widget(this.refreshButton).finish())
                 .finish(),
             this.layoutBuilder().box().widget(this.workersTable).finish(),
@@ -38,12 +39,12 @@ export class WorkersPageForm extends StrongFBFormClass<widgets> {
             { name: 'options', title: 'Options', type: 'actions' },
         ]).mapColumnValue('index', (row, i) => {
             return i + 1;
-        }).mapColumnValue('started_at', (row, i) => {
+        }).mapColumnValue('started_at', async (row, i) => {
             let date = new Date(row['started_at']);
-            return date.toDateString() + ' - ' + date.toTimeString().substring(0, 8);
-        }).mapColumnValue('ended_at', (row, i) => {
+            return await this.locale.dateFormat('DD MMMM YYYY - HH:mm', date);
+        }).mapColumnValue('ended_at', async (row, i) => {
             let date = new Date(row['ended_at']);
-            return date.toDateString() + ' - ' + date.toTimeString().substring(0, 8);
+            return await this.locale.dateFormat('DD MMMM YYYY - HH:mm', date);
         }).mapColumnValue<TableTagColumnMapValue>('success', (row, i) => {
             return {
                 value: row['success'] ? 'Success' : 'failed',
