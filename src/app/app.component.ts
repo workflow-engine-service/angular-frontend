@@ -70,6 +70,7 @@ export class AppComponent implements AfterViewInit {
             'workers': Workers_Lang,
           }
         },
+        assetsBaseUrl: '/frontend/assets/StrongFB',
         darkTheme: true,
       });
       setTimeout(() => {
