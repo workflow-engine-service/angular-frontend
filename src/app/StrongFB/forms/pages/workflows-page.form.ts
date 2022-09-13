@@ -49,27 +49,30 @@ export class WorkflowsPageForm extends StrongFBFormClass<widgets> {
             }
             console.log('res:', res['data'])
             return res['data'];
-        }).mapActionsColumn('options', [
-            {
-                mode: 'icon',
-                icon: 'crop-outline',
-                text: 'Visualize',
-                status: 'primary',
-                action: (row, i, self) => {
-                    this.service.goToPage(`/admin/workflow/visualize?name=${row['workflow_name']}&version=${row['workflow_version']}`)
-                }
-            },
-            // {
-            //     mode: 'icon',
-            //     icon: 'archive-outline',
-            //     text: 'History',
-            //     status: 'primary',
-            //     disabled: true,
-            //     action: (row, i, self) => {
-            //         alert('hello history');
-            //     }
-            // },
-        ]);
+        }).mapPaginationByApi({
+            pageCountResponse: 'pagination.page_count'
+        })
+            .mapActionsColumn('options', [
+                {
+                    mode: 'icon',
+                    icon: 'crop-outline',
+                    text: 'Visualize',
+                    status: 'primary',
+                    action: (row, i, self) => {
+                        this.service.goToPage(`/admin/workflow/visualize?name=${row['workflow_name']}&version=${row['workflow_version']}`)
+                    }
+                },
+                // {
+                //     mode: 'icon',
+                //     icon: 'archive-outline',
+                //     text: 'History',
+                //     status: 'primary',
+                //     disabled: true,
+                //     action: (row, i, self) => {
+                //         alert('hello history');
+                //     }
+                // },
+            ]);
     }
 
 }

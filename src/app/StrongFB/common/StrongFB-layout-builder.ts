@@ -1,4 +1,5 @@
 import { BehaviorSubject } from "rxjs";
+import { generateId } from "./StrongFB-common";
 import { StrongFBLayoutBuilderProperties } from "./StrongFB-layout-builder-properties";
 import { StrongFBLayoutBuilderBoxCommonProperties, StrongFBLayoutBuilderGridColumnType, StrongFBLayoutBuilderGridCommonProperties, StrongFBLayoutBuilderNormalBoxProperties, StrongFBLayoutBuilderSchema, StrongFBLayoutBuilderType } from "./StrongFB-layout-builder-types";
 import { ScreenMode } from "./StrongFB-types";
@@ -12,7 +13,10 @@ export class StrongFBLayoutBuilder<WIDGET extends string = string> {
 
     private _propertiesClass: StrongFBLayoutBuilderProperties<WIDGET>;
 
+    private _id: string;
+
     constructor(type: StrongFBLayoutBuilderType = 'box') {
+        this._id = generateId('layout');
         this._schema.type = type;
         this._propertiesClass = new StrongFBLayoutBuilderProperties(this);
     }
@@ -39,6 +43,20 @@ export class StrongFBLayoutBuilder<WIDGET extends string = string> {
         return this._propertiesClass = new StrongFBLayoutBuilderProperties<WIDGET>(this);
 
     }
+
+    rowReverseBox(properties?: StrongFBLayoutBuilderBoxCommonProperties<WIDGET>) {
+        this._schema.type = 'box';
+        properties = this._makeObject(properties, ['style']);
+        properties.style['display'] = 'flex';
+        properties.style['flex-direction'] = 'row-reverse';
+        properties.style['align-items'] = 'center';
+        this._setBoxCommonProperties(properties);
+
+
+        return this._propertiesClass = new StrongFBLayoutBuilderProperties<WIDGET>(this);
+
+    }
+
     box(properties?: StrongFBLayoutBuilderNormalBoxProperties<WIDGET>) {
         this._schema.type = 'box';
         this._setBoxCommonProperties(properties);

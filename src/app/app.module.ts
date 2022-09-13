@@ -16,6 +16,7 @@ import { UsersPageComponent } from './pages/admin/users-page/users-page.componen
 import { WorkflowsPageComponent } from './pages/admin/workflows-page/workflows-page.component';
 import { WorkflowDiagramPageComponent } from './pages/admin/workflow-diagram-page/workflow-diagram-page.component';
 import { FormsModule } from '@angular/forms';
+import { MypipPipe } from './mypip.pipe';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { FormsModule } from '@angular/forms';
     WorkersPageComponent,
     UsersPageComponent,
     WorkflowsPageComponent,
-    WorkflowDiagramPageComponent
+    WorkflowDiagramPageComponent,
+    MypipPipe
   ],
   imports: [
     BrowserModule,

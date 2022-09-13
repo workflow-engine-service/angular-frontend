@@ -54,7 +54,14 @@ export interface StrongFBValidatorSchema {
     name: StrongFBValidatorName;
     value?: any;
     error?: string;
-    hint?: string;
+    // hint?: string;
+}
+
+export interface StrongFBCheckValidatorsResponse {
+    isValid: boolean;
+    error?: string;
+    name?: StrongFBValidatorName;
+    newValue?: any;
 }
 
 export type StrongFBCustomValidatorFunctionType = (value: string | number) => Promise<boolean> | boolean;
@@ -96,4 +103,29 @@ export interface StrongFBConfigOptions {
      */
     language?: AvailableLanguage;
     customLocales?: CustomLocales;
+    /**
+     * @default '/assets/StrongFB'
+     */
+    assetsBaseUrl?: string;
+    /**
+     * @default false
+     */
+    darkTheme?: boolean;
+    /**
+     * you can inject your custom services and use them later on forms
+     * @default {}
+     */
+    injectServices?: { [k: string]: any };
+}
+
+export interface FormFieldMetaData<T = string> {
+    name?: T;
+    value?: any;
+    error?: string;
+    is_valid?: boolean;
+    is_show?: boolean;
+    /** 
+     * if user try to change value
+    */
+    is_dirty?: boolean;
 }

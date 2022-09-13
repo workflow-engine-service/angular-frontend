@@ -13,6 +13,7 @@
     "src/app/StrongFB/**/*.ts"
   ],
   "exclude": [
-    "strong_form_builder/**/"
+    "strong_form_builder/**/",
+    "node_modules/**/*.d.ts"
   ]
 }

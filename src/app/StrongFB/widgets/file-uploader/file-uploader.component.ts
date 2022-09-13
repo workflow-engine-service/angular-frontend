@@ -3,6 +3,7 @@ import { StrongFBBaseWidget } from '../../common/StrongFB-widget';
 import { FileUploaderErrorKey, FileUploaderFileStruct, FileUploaderMessageKey, FileUploaderSchema } from './file-uploader-interfaces';
 import { interval, Observable, takeUntil } from 'rxjs';
 import { HttpEventType } from '@angular/common/http';
+import { StrongFBLocaleService } from '../../services/StrongFB-locale.service';
 
 @Component({
     selector: 'file-uploader-widget',
@@ -11,7 +12,7 @@ import { HttpEventType } from '@angular/common/http';
 })
 export class StrongFBFileUploaderWidgetComponent extends StrongFBBaseWidget<FileUploaderSchema> {
 
-    @Output() ngModelChange = new EventEmitter<File[]>();
+    @Output() override ngModelChange = new EventEmitter<File[]>();
 
     @Output() addFileEvent = new EventEmitter<FileUploaderFileStruct>();
 
@@ -31,19 +32,24 @@ export class StrongFBFileUploaderWidgetComponent extends StrongFBBaseWidget<File
     override schema: FileUploaderSchema;
 
     protected defaultErrors: { [k in FileUploaderErrorKey]?: string } = {
-        upload_max_size_limit: 'max file size limit is $1 (your file size is $2)',
-        upload_max_files_limit: 'max files limit is $1'
+        upload_max_size_limit: this.locale.trans('msgs', 'max file size limit is $1 (your file size is $2)'),
+        upload_max_files_limit: this.locale.trans('msgs', 'max files limit is $1'),
+        error_on_uploading: this.locale.trans('msgs', 'Error occurred while uploading file')
     };
 
     protected defaultMessages: { [k in FileUploaderMessageKey]?: string } = {
-        upload_complete: 'Upload Completed',
-        uploading: 'uploading ...',
-        starting: 'starting ...',
+        upload_complete: this.locale.trans('msgs', 'Upload Completed'),
+        uploading: this.locale.trans('msgs', 'uploading ...'),
+        starting: this.locale.trans('msgs', 'starting ...'),
     }
     /********************************** */
 
-    constructor(protected detectChanges: ChangeDetectorRef, protected elref: ElementRef) {
-        super(elref);
+    constructor(
+        protected detectChanges: ChangeDetectorRef,
+        protected elref: ElementRef,
+        public locale: StrongFBLocaleService,
+    ) {
+        super(elref, detectChanges);
     }
     /********************************** */
 
@@ -51,6 +57,7 @@ export class StrongFBFileUploaderWidgetComponent extends StrongFBBaseWidget<File
         this.schema = this.widgetHeader.schema;
         // =>normalize schema
         this.schema = await this.normalizeSchema(this.schema);
+        this.listenOnFormFieldChange('value');
         // =>after 1.5s, upload a file
         interval(1500).pipe(takeUntil(this.destroy$)).subscribe(() => {
             // =>if no plan for upload files
@@ -67,7 +74,12 @@ export class StrongFBFileUploaderWidgetComponent extends StrongFBBaseWidget<File
             file.status = 'uploading';
             this.fileStartUploadingEvent.emit(file);
             // =>try to upload file
-            this.schema.server.sendFile(file.file).pipe(takeUntil(this.destroy$)).subscribe(event => {
+            file['upload_subscribe'] = this.schema.server.sendFile(file.file).pipe(takeUntil(this.destroy$)).subscribe(event => {
+                // =>if error occur
+                if (event['ok'] === false && event['status'] >= 400) {
+                    this.emitFileError(file);
+                    return;
+                }
                 // log('upload event:', event);
                 // =>if progress uploading
                 if (event && event.type !== undefined && event.type === HttpEventType.UploadProgress) {
@@ -92,16 +104,29 @@ export class StrongFBFileUploaderWidgetComponent extends StrongFBBaseWidget<File
 
 
             }, (error) => {
-                file.error = 'Error occurred while uploading file';
-                this.errorEvent.emit(file);
+                this.emitFileError(file);
             });
 
         });
     }
     /********************************** */
+    emitFileError(file: FileUploaderFileStruct, key: FileUploaderErrorKey = 'error_on_uploading', params?: any[]) {
+        file.error = this.makeFileError(key, params);
+        // =>action error
+        this.globalError = file.error;
+        // =>update status of file
+        file.status = 'failed';
+        file.color = 'danger';
+        this.errorEvent.emit(file);
+        if (file['upload_subscribe']?.unsubscribe) {
+            file['upload_subscribe']?.unsubscribe();
+        }
+        this.detectChanges.detectChanges();
+    }
+    /********************************** */
 
     normalizeSchema(schema: FileUploaderSchema) {
-        if (!schema.placeholder) schema.placeholder = 'Upload files here...';
+        if (!schema.placeholder) schema.placeholder = this.locale.trans('msgs', 'Upload files here...');
         if (schema.multiple === undefined) schema.multiple = false;
         // if (!schema.status) schema.status = 'basic';
         if (!schema.maxFiles) schema.maxFiles = 1;
@@ -133,6 +158,7 @@ export class StrongFBFileUploaderWidgetComponent extends StrongFBBaseWidget<File
         if (index < 0) return;
         this.removeFileEvent.emit(file);
         this.filePickerFiles.splice(index, 1);
+        this.schema.value = undefined;
         this.detectChanges.detectChanges();
         this.fileUploaderChange(this.filePickerFiles.map(i => i.file));
     }
@@ -140,12 +166,8 @@ export class StrongFBFileUploaderWidgetComponent extends StrongFBBaseWidget<File
     /********************************** */
     /********************************** */
     fileUploaderChange(event: File[]) {
-        // =>set value to form field
-        if (this.widgetHeader['_formFieldName']) {
-            this.widgetForm['_formFieldValues'][this.widgetHeader['_formFieldName']] = event;
-        }
-        // console.log('change:', event)
-        this.ngModelChange.emit(event);
+        this.schema._value = event;
+        this.updateFormField('_value');
     }
     /********************************** */
     fileBrowserChange(event: MouseEvent | any) {
@@ -169,25 +191,22 @@ export class StrongFBFileUploaderWidgetComponent extends StrongFBBaseWidget<File
             let error;
             // =>check max file size
             if (file.size > this.schema.maxSize) {
-                error = this.makeFileError('upload_max_size_limit', [this.convertBytesToHumanly(this.schema.maxSize), this.convertBytesToHumanly(file.size)]);
+                error = this.makeFileError('upload_max_size_limit', [this.locale.humanlySize(this.schema.maxSize), this.locale.humanlySize(file.size)]);
 
             }
             // =>check max files
             if (this.filePickerFiles.length + 1 > this.schema.maxFiles) {
-                error = this.makeFileError('upload_max_files_limit', [this.schema.maxFiles]);
-                this.errorEvent.emit({
+                this.emitFileError({
                     file,
-                    color: undefined,
                     name: file.name,
                     error,
                     size: file.size,
                     status: 'failed',
+                    color: 'danger',
                     progress: 0,
-                });
-                // =>action error
-                this.globalError = error;
+                    imageSrc: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+                }, 'upload_max_files_limit', [this.schema.maxFiles]);
                 return;
-
             }
             this.filePickerFiles.push({
                 file,
@@ -197,6 +216,7 @@ export class StrongFBFileUploaderWidgetComponent extends StrongFBBaseWidget<File
                 status: error ? 'failed' : 'start',
                 color: error ? 'danger' : 'basic', //'#c44e47' : '#595e68',
                 progress: 0,
+                imageSrc: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
             });
             this.addFileEvent.emit(this.filePickerFiles[this.filePickerFiles.length - 1]);
             // =>in not any error
@@ -230,14 +250,5 @@ export class StrongFBFileUploaderWidgetComponent extends StrongFBBaseWidget<File
         return message;
     }
     /********************************** */
-    convertBytesToHumanly(bytes: number, units = ['Bytes', 'KB', 'MB', 'GB', 'TB']) {
-        let size = bytes.toString();
-        // tslint:disable-next-line: prefer-for-of
-        for (let i = 0; i < units.length; i++) {
-            if (bytes < 1000) { return size + ' ' + units[i]; }
-            bytes /= 1000;
-            size = bytes.toFixed(1);
-        }
-        return size + ' ' + units[units.length - 1];
-    }
+
 }

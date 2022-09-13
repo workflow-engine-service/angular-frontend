@@ -84,10 +84,10 @@ export class AdminUsersPageForm extends StrongFBFormClass<widgets, object, InitD
             { name: 'options', title: 'Options', type: 'actions' },
         ]).mapColumnValue('index', (row, i) => {
             return i + 1;
-        }).mapColumnValue('created_at', (row, i) => {
+        }).mapColumnValue('created_at', async (row, i) => {
             let date = new Date(row['created_at']);
             if (!row['created_at'] || !date) return '-';
-            return date.toDateString() + ' - ' + date.toTimeString().substring(0, 8);
+            return await this.locale.dateFormat('DD MMMM YYYY - HH:mm', date);
         }).mapColumnValue<TableTagColumnMapValue[]>('roles', (row, i) => {
             let roles = row['roles'];
             return roles.map(j => {
@@ -117,16 +117,22 @@ export class AdminUsersPageForm extends StrongFBFormClass<widgets, object, InitD
             //         alert('hello details');
             //     }
             // },
-            // {
-            //     mode: 'icon',
-            //     icon: 'archive-outline',
-            //     text: 'History',
-            //     status: 'primary',
-            //     disabled: true,
-            //     action: (row, i, self) => {
-            //         alert('hello history');
-            //     }
-            // },
+            {
+                mode: 'icon',
+                icon: 'trash-outline',
+                text: 'Delete',
+                status: 'danger',
+                action: async (row, i, self) => {
+
+                    if (!await this.confirm(this.__('Delete User'), this.__('Are you sure to delete this user?'))) return;
+                    let res = await this.http.delete('/admin/user/delete', { id: row['id'] });
+                    if (res.result) {
+                        self.updateRows();
+                    } else {
+                        this.notify('can not delete user!', 'failure');
+                    }
+                }
+            },
         ]).mapPaginationByApi({
             pageSize: 10,
             pageCountResponse: 'pagination.page_count',

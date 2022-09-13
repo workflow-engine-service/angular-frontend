@@ -83,6 +83,28 @@ export interface TableColumnAction<R extends object = object> {
 
 }
 
+export type TableSelectableCallback<ROW extends object = object> = (rows?: ROW[], self?: StrongFBTableWidget) => any;
+
+export interface TableSelectable<ROW extends object = object> {
+    callback: TableSelectableCallback<ROW>;
+    rowKey: (row: ROW, self?: StrongFBTableWidget) => string;
+    /**
+     * @default false
+     */
+    multiple?: boolean;
+    /**
+     * limit to select rows (for multiple)
+     * @default 0 (unlimited to select rows)
+     */
+    limit?: number;
+    selectedRows?: ROW[];
+
+}
+
+export interface TableNotFound {
+    html?: string;
+    imageUrl?: string;
+}
 export interface TableSchema<COL extends string = string, ROW extends object = object> {
     columns?: TableColumn<COL, ROW>[];
     loadRowsByApi?: {
@@ -91,4 +113,8 @@ export interface TableSchema<COL extends string = string, ROW extends object = o
     };
     columnActions?: { [k in COL]?: TableColumnAction<ROW>[] | TableColumnDynamicActionsType };
     mapApiPagination?: TableMapApiPagination;
+
+    selectable?: TableSelectable<ROW>;
+
+    notFound?: TableNotFound;
 }

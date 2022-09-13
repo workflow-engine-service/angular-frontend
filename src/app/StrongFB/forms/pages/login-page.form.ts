@@ -28,7 +28,7 @@ export class LoginPageForm extends StrongFBFormClass<widgets, loginFormFields, o
     //     password: this.fieldModel(''),
     // }
     // =>after layout complete
-    override onInit() {
+    override async onInit() {
         // this.updateFormFields({
         //     username: 'admin',
         //     password: '4564324rfd4r2dfd'

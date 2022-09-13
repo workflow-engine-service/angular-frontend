@@ -1,6 +1,7 @@
 import { Validators } from "@angular/forms";
 import { StrongFBFormClass } from "../../common/StrongFB-base";
 import { StrongFBValidator } from "../../common/StrongFB-validator";
+import { StrongFBEditorWidget } from "../../widgets/editor/editor.header";
 import { StrongFBFileUploaderWidget } from "../../widgets/file-uploader/file-uploader.header";
 import { StrongFBFormFieldWidget } from "../../widgets/form-field/form-field.header";
 import { StrongFBInputWidget } from "../../widgets/input/input.header";
@@ -71,7 +72,7 @@ export class ExecuteProcessActionForm extends StrongFBFormClass<widgets, object,
             }
         }
 
-        fields.push(new StrongFBFormFieldWidget().label('Message').field(new StrongFBTextAreaWidget().placeholder('message ...').formFieldName('message').maxWidth('600px')).validator(this.message_required ? new StrongFBValidator().required() : undefined));
+        fields.push(new StrongFBFormFieldWidget().label('Message').field(new StrongFBEditorWidget().placeholder('message ...').formFieldName('message')).validator(this.message_required ? new StrongFBValidator().required() : undefined));
 
         return fields;
     }

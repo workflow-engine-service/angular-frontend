@@ -5,9 +5,11 @@ import { LanguageInfo } from '../common/StrongFB-interfaces';
 import { AvailableLanguage, AvailableLanguages, CustomLocales, Direction, LocaleCalendar, LocaleNamespace } from '../common/StrongFB-types';
 import { Common_en } from '../locales/en/common';
 import { EN_LANG_INFO } from '../locales/en/info';
+import { EN_msgs } from '../locales/en/msgs';
 import { Units_en } from '../locales/en/units';
 import { Common_fa } from '../locales/fa/common';
 import { FA_LANG_INFO } from '../locales/fa/info';
+import { FA_msgs } from '../locales/fa/msgs';
 import { Units_fa } from '../locales/fa/units';
 import { StrongFBTransmitService } from './StrongFB-transmit.service';
 
@@ -22,25 +24,27 @@ export class StrongFBLocaleService<CN extends string = string> {
     protected localStorageKey = '_lang_';
     protected langInfo: LanguageInfo;
     protected namespaces: Map<LocaleNamespace, object>;
-    protected direction = new BehaviorSubject<Direction>('rtl');
-    private requiredNamespaces: LocaleNamespace[] = ['common', 'units', 'info'];
+    protected direction$ = new BehaviorSubject<Direction>('rtl');
+    private requiredNamespaces: LocaleNamespace[] = ['common', 'units', 'info', 'msgs'];
     protected allLoadedNamespaces: { [k in AvailableLanguage]: { [k1 in LocaleNamespace]: { [k2: string]: string } } } = {
         fa: {
             common: Common_fa,
             units: Units_fa,
             info: FA_LANG_INFO as any,
+            msgs: FA_msgs,
         },
         en: {
             common: Common_en,
             units: Units_en,
             info: EN_LANG_INFO as any,
+            msgs: EN_msgs,
         }
 
     };// = ['units', 'common'];
     protected allCustomLocales: CustomLocales;
 
 
-    public langLoaded = new BehaviorSubject<boolean>(false);
+    public languageChanged = new BehaviorSubject<AvailableLanguage>(undefined);
 
     /*************************************************************** */
     constructor(private transmit: StrongFBTransmitService) {
@@ -63,7 +67,7 @@ export class StrongFBLocaleService<CN extends string = string> {
                 document.getElementsByTagName('html')[0].setAttribute('dir', this.langInfo.direction);
                 document.getElementsByTagName('html')[0].setAttribute('lang', this.langInfo.code);
                 // =>emit new direction
-                this.direction.next(this.langInfo.direction);
+                this.direction$.next(this.langInfo.direction);
             }, 50);
             // =>set lang in local storage
             localStorage.setItem(this.localStorageKey, this.lang);
@@ -74,7 +78,7 @@ export class StrongFBLocaleService<CN extends string = string> {
             await this.loadNamespace(namespace);
 
         }
-        this.langLoaded.next(true);
+        this.languageChanged.next(this.lang);
         // =>load default font
         // this.setMainFont();
     }
@@ -84,9 +88,9 @@ export class StrongFBLocaleService<CN extends string = string> {
         this.allCustomLocales = options.customLocales;
     }
     /*************************************************************** */
-    changeDirection(): BehaviorSubject<Direction> {
+    get direction(): BehaviorSubject<Direction> {
         // =>return observe of direction
-        return this.direction;
+        return this.direction$;
     }
     /*************************************************************** */
     getLangInfo(): LanguageInfo {

@@ -1,3 +1,5 @@
+import { StrongFBBaseWidgetHeader } from "./StrongFB-widget-header";
+
 export type TransmitChannelName = 'notification' | 'snackbar-message' | 'page' | 'response' | 'page-loading' | 'screen-mode' | 'dialog-response' | 'dialog-action-click';
 
 export enum APIStatusCodes {
@@ -48,9 +50,16 @@ export type Direction = 'rtl' | 'ltr';
 
 export type LocaleCalendar = 'jalali' | 'gregorian' | 'auto';
 
-export type LocaleNamespace = 'units' | 'common' | 'info';
+export type LocaleNamespace = 'units' | 'common' | 'info' | 'msgs';
 
 export type CustomLocales = { [k in AvailableLanguage]?: { [k1: string]: { [k2: string]: string } } };
+
+
+export type NotifyCssAnimationStyle = 'fade' | 'zoom' | 'from-right' | 'from-top' | 'from-bottom' | 'from-left';
+
+export type StrongFBWidgetShowCallback = (self?: StrongFBBaseWidgetHeader) => Promise<boolean> | boolean;
+
+
 /**************************** */
 /*********CONSTANTS********** */
 /**************************** */
@@ -64,7 +73,7 @@ export const TextMimeTypes = ['application/xml', 'application/json', 'text/plain
 export const ArchiveMimeTypes = ['application/zip', 'application/gzip', 'application/x-7z-compressed', 'application/vnd.rar'];
 export const ExecuteMimeTypes = ['application/x-sega-cd-rom', 'application/vnd.android.package-archive'];
 
-export type MimeTypes = 'audio/mp3' | 'audio/wav' | 'audio/mpeg' | 'image/png' | 'image/jpeg' | 'image/gif' | 'video/mp4' | 'video/webm' | 'application/xml' | 'application/json' | 'text/plain' | 'application/zip' | 'application/gzip' | 'application/x-7z-compressed' | 'application/vnd.rar' | 'application/x-sega-cd-rom' | 'application/vnd.android.package-archive';
+export type MimeTypes = '*' | 'audio/mp3' | 'audio/wav' | 'audio/mpeg' | 'image/png' | 'image/jpeg' | 'image/gif' | 'video/mp4' | 'video/webm' | 'video/mpeg' | 'video/ogg' | 'application/xml' | 'application/json' | 'text/plain' | 'application/zip' | 'application/gzip' | 'application/x-7z-compressed' | 'application/vnd.rar' | 'application/x-sega-cd-rom' | 'application/vnd.android.package-archive' | 'image/*' | 'application/pdf' | 'audio/*' | 'video/*' | 'application/x-mpegurl';
 
 export const ExecuteExtensions = ['exe', 'sh'];
 export const ImageExtensions = ['png', 'jpg', 'jpeg', 'bmp', 'gif'];

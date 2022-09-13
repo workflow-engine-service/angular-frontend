@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, EventEmitter, SimpleChanges, TemplateRef, ViewChild, Output } from '@angular/core';
+import { Component, ElementRef, Input, EventEmitter, SimpleChanges, TemplateRef, ViewChild, Output, ChangeDetectorRef } from '@angular/core';
 import { NbDialogRef, NbDialogService } from '@nebular/theme';
 import { interval, takeUntil } from 'rxjs';
 import { StrongFBFormClass } from '../../common/StrongFB-base';
@@ -6,6 +6,7 @@ import { StrongFBDialogAction } from '../../common/StrongFB-interfaces';
 import { StrongFBLayoutBuilder } from '../../common/StrongFB-layout-builder';
 import { StrongFBLayoutBuilderSchema } from '../../common/StrongFB-layout-builder-types';
 import { StrongFBBaseWidget } from '../../common/StrongFB-widget';
+import { StrongFBLocaleService } from '../../services/StrongFB-locale.service';
 import { StrongFBTransmitService } from '../../services/StrongFB-transmit.service';
 
 @Component({
@@ -32,8 +33,13 @@ export class StrongFBDialogComponent extends StrongFBBaseWidget {
     // protected override  showLoading = false;
     protected _dialogRef: NbDialogRef<StrongFBDialogComponent>;
 
-    constructor(protected override elRef: ElementRef, private dialogService: NbDialogService, private transmit: StrongFBTransmitService) {
-        super(elRef);
+    constructor(
+        protected override elRef: ElementRef,
+        private dialogService: NbDialogService,
+        private transmit: StrongFBTransmitService,
+        private locale: StrongFBLocaleService,
+        protected override cdr: ChangeDetectorRef,) {
+        super(elRef, cdr);
     }
 
     layoutSchema: StrongFBLayoutBuilderSchema;
@@ -60,7 +66,7 @@ export class StrongFBDialogComponent extends StrongFBBaseWidget {
 
 
     /***************************************** */
-    async normalizeActions() {
+    protected async normalizeActions() {
         if (!this.actions || !Array.isArray(this.actions)) return;
         for (const act of this.actions) {
             // =>if show function
@@ -69,9 +75,12 @@ export class StrongFBDialogComponent extends StrongFBBaseWidget {
             } else {
                 act.__show = true;
             }
+            if (!act.status) {
+                act.status = 'primary';
+            }
             // =>if is cancel
             if (act.isCancel) {
-                if (!act.text) act.text = 'cancel';
+                if (!act.text) act.text = this.locale.trans('common', 'cancel');
                 act.status = 'danger';
                 act.closable = true;
             }
@@ -116,7 +125,7 @@ export class StrongFBDialogComponent extends StrongFBBaseWidget {
         await this.runActionFunction(action);
     }
     /***************************************** */
-    async runActionFunction(action: StrongFBDialogAction) {
+    protected async runActionFunction(action: StrongFBDialogAction) {
         if (action.action) {
             const ret = await action.action.call(this.widgetForm, this.form.formFieldValues());
             if (ret) {

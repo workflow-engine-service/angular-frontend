@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ViewChild, ViewContainerRef } from '@angular/core';
-import { NbDirectionality, NbThemeService } from '@nebular/theme';
+import { NbDirectionality, NbLayoutDirection, NbLayoutDirectionService, NbThemeService } from '@nebular/theme';
 import { Common } from './locales/fa/common';
 import { LANG as login_LANG } from './locales/fa/login';
 import { Workers_Lang } from './locales/fa/workers';
@@ -20,9 +20,8 @@ export class AppComponent implements AfterViewInit {
   version = SettingsService.VERSION;
   @ViewChild('serviceRef', { read: ViewContainerRef }) ServiceRef: ViewContainerRef;
 
-  constructor(private themeService: NbThemeService, public http: StrongFBHttpService, private srv: StrongFBService) {
+  constructor(private themeService: NbThemeService, public http: StrongFBHttpService, private srv: StrongFBService, private dirService: NbLayoutDirectionService) {
     SettingsService.load();
-
     // this.themeService.changeTheme('dark');
   }
 
@@ -52,6 +51,7 @@ export class AppComponent implements AfterViewInit {
   changeLanguage() {
     this.configsLoaded = false;
     this.srv.locale().setLang(this.selectedLanguage);
+    this.dirService.setDirection(this.srv.locale().direction.getValue() === 'rtl' ? NbLayoutDirection.RTL : NbLayoutDirection.LTR);
     this.configsLoaded = true;
   }
 
@@ -69,7 +69,8 @@ export class AppComponent implements AfterViewInit {
             'common': Common,
             'workers': Workers_Lang,
           }
-        }
+        },
+        darkTheme: true,
       });
       setTimeout(() => {
         this.srv.locale().setLang(this.selectedLanguage);

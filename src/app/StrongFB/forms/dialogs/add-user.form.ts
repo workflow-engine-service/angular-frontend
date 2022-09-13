@@ -1,6 +1,7 @@
 import { Validators } from "@angular/forms";
 import { StrongFBFormClass } from "../../common/StrongFB-base";
 import { StrongFBValidator } from "../../common/StrongFB-validator";
+import { StrongFBButtonWidget } from "../../widgets/button/button.header";
 import { StrongFBFormFieldWidget } from "../../widgets/form-field/form-field.header";
 import { StrongFBInputWidget } from "../../widgets/input/input.header";
 import { StrongFBTagsListWidget } from "../../widgets/tags-list/tags-list.header";
@@ -52,7 +53,4 @@ export class AddUserForm extends StrongFBFormClass<widgets, object, InitData> {
         return new StrongFBFormFieldWidget().field(new StrongFBTagsListWidget().separatorKeys(['comma']).formFieldName('roles')).label('roles');
     }
 
-    messageField() {
-        return new StrongFBTextAreaWidget().placeholder('message ...').formFieldName('message').maxWidth('600px');
-    }
 }

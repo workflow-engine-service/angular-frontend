@@ -1,5 +1,6 @@
 import { HttpProgressEvent, HttpResponse, HttpSentEvent } from "@angular/common/http";
 import { Observable } from "rxjs";
+import { MimeTypes } from "../../common/StrongFB-types";
 import { StrongFBFileUploaderWidget } from "./file-uploader.header";
 
 
@@ -18,13 +19,13 @@ export interface FileUploaderFileStruct {
      * for display file on file picker
      */
     url?: string;
+    // imagePreview?: boolean;
+    imageSrc?: string;
 }
 
 export type FileUploaderFileUploadedEventCallback = (file: FileUploaderFileStruct, event: HttpResponse<any>, self?: StrongFBFileUploaderWidget) => any;
 
-export type mimeTypes = '*' | 'audio/mp3' | 'audio/wav' | 'audio/mpeg' | 'image/png' | 'image/jpeg' | 'image/gif' | 'video/mp4' | 'video/webm' | 'application/xml' | 'application/json' | 'text/plain' | 'application/zip' | 'application/gzip' | 'application/x-7z-compressed' | 'application/vnd.rar' | 'application/x-sega-cd-rom' | 'application/vnd.android.package-archive' | 'image/*';
-
-export type FileUploaderErrorKey = 'upload_max_size_limit' | 'upload_max_files_limit';
+export type FileUploaderErrorKey = 'upload_max_size_limit' | 'upload_max_files_limit' | 'error_on_uploading';
 
 export type FileUploaderMessageKey = 'uploading' | 'upload_complete' | 'starting';
 
@@ -55,7 +56,7 @@ export interface FileUploaderSchema {
      * @default '*'
      * accept to upload mime type files
      */
-    accept?: mimeTypes[];
+    accept?: MimeTypes[];
     /**
     * @default 1
     * max files that client can be uploaded
@@ -98,6 +99,8 @@ export interface FileUploaderSchema {
      */
     messages?: { [k in FileUploaderMessageKey]?: string };
 
+
+    _value?: File[];
 
 
 

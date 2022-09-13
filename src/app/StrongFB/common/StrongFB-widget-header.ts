@@ -1,3 +1,5 @@
+import { BehaviorSubject } from "rxjs";
+import { StrongFBWidgetShowCallback } from "./StrongFB-types";
 
 
 export class StrongFBBaseWidgetHeader<SCHEMA extends object = object, WIDGET_NAME extends string = string> {
@@ -9,6 +11,10 @@ export class StrongFBBaseWidgetHeader<SCHEMA extends object = object, WIDGET_NAM
     protected _name: string;
 
     protected _commonStyles: object = {};
+
+    protected _showCallback: StrongFBWidgetShowCallback;
+
+    protected _isLoading = new BehaviorSubject<boolean>(undefined);
 
     get schema() {
         return this._schema;
@@ -24,6 +30,11 @@ export class StrongFBBaseWidgetHeader<SCHEMA extends object = object, WIDGET_NAM
 
     name(name: WIDGET_NAME) {
         this._name = name;
+        return this;
+    }
+
+    loading(is = true) {
+        this._isLoading.next(is);
         return this;
     }
 
@@ -43,4 +54,10 @@ export class StrongFBBaseWidgetHeader<SCHEMA extends object = object, WIDGET_NAM
 
         return this;
     }
+
+    showByCallback(callback: StrongFBWidgetShowCallback) {
+        this._showCallback = callback;
+        return this;
+    }
+
 }

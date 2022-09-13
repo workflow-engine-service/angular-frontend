@@ -1,12 +1,18 @@
 
 import { Injectable, ViewContainerRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { StrongFBFormClass } from '../common/StrongFB-base';
 import { StrongFBConfigOptions, StrongFBDialogAction } from '../common/StrongFB-interfaces';
 import { StrongFBDialogComponent } from '../widgets/dialog/dialog.component';
 import { StrongFBHttpService } from './StrongFB-http.service';
 import { StrongFBLocaleService } from './StrongFB-locale.service';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import { Confirm, IConfirmOptions } from 'notiflix/build/notiflix-confirm-aio';
+
+import { NotifyCssAnimationStyle, NotifyMode } from '../common/StrongFB-types';
+import { StrongFBHelper } from '../StrongFB-helpers';
+import { StrongFBTransmitService } from './StrongFB-transmit.service';
 
 @Injectable({
     providedIn: 'root'
@@ -14,6 +20,9 @@ import { StrongFBLocaleService } from './StrongFB-locale.service';
 export class StrongFBService {
     protected _viewContainerRef: ViewContainerRef;
     protected _scripts: { src: string; loaded?: boolean; }[] = [];
+    protected _assetsBaseUrl: string;
+    protected _darkTheme: boolean;
+    protected _injectServices: { [k: string]: any } = {};
 
     protected defaultOptions: StrongFBConfigOptions = {
         localStorageTokenKey: 'access_token',
@@ -21,6 +30,7 @@ export class StrongFBService {
         apiEndPoint: 'http:localhost:8081/api',
         authenticationHeaderName: 'Authentication',
         loginUrl: '/login',
+        assetsBaseUrl: '/assets/StrongFB',
         getRefreshTokenApi: async (http: StrongFBHttpService) => {
             return {
                 access_token: '',
@@ -29,6 +39,8 @@ export class StrongFBService {
         },
         language: 'en',
         viewContainerRef: null,
+        darkTheme: false,
+        injectServices: {},
     }
     /********************************* */
 
@@ -36,6 +48,8 @@ export class StrongFBService {
         protected _http: StrongFBHttpService,
         protected _router: Router,
         protected _locale: StrongFBLocaleService,
+        protected _activeRoute: ActivatedRoute,
+        protected _transmit: StrongFBTransmitService,
     ) {
 
     }
@@ -70,7 +84,25 @@ export class StrongFBService {
         }
         // =>set service options
         this._viewContainerRef = options.viewContainerRef;
+        this._assetsBaseUrl = options.assetsBaseUrl;
+        this._darkTheme = options.darkTheme;
+        this._injectServices = options.injectServices;
 
+    }
+    /********************************* */
+    assetsUrl(path: string) {
+        if (!this._assetsBaseUrl.endsWith('/')) this._assetsBaseUrl += '/';
+        return this._assetsBaseUrl + path;
+    }
+    /********************************* */
+    getUrlParam<T = string>(key: string, def?: T) {
+        let value = this._activeRoute.snapshot.queryParamMap.get(key);
+        if (value === undefined || value === null) return def;
+        return value;
+    }
+    /********************************* */
+    get activeRoute() {
+        return this.activeRoute;
     }
     /********************************* */
 
@@ -84,15 +116,19 @@ export class StrongFBService {
      * @returns 
      */
     async loadFormClass(form: any, data?: object): Promise<StrongFBFormClass> {
-        let formInstance = new form(this._http, this, {
-            rtl: this._locale.getLangInfo()?.direction === 'rtl',
-            initData: data,
-        }) as StrongFBFormClass;
+        let formInstance = new form(
+            this._http,
+            this,
+            this._transmit,
+            {
+                rtl: this._locale.getLangInfo()?.direction === 'rtl',
+                initData: data,
+            },
+        ) as StrongFBFormClass;
 
         return formInstance;
     }
     /********************************* */
-
     goToPage(path: string) {
         return this._router.navigateByUrl(path);
     }
@@ -132,7 +168,7 @@ export class StrongFBService {
         return this._locale;
     }
     /********************************* */
-    loadScript(src: string) {
+    async loadScript(src: string) {
         return new Promise((resolve, reject) => {
             let scriptObject = this._scripts.find(i => i.src == src);
             if (!scriptObject) {
@@ -171,5 +207,107 @@ export class StrongFBService {
         });
     }
     /********************************* */
+    notify(options: {
+        mode?: NotifyMode;
+        text: string;
+        callback?: () => any;
+        timeout?: number;
+        cssAnimationStyle?: NotifyCssAnimationStyle;
+        rtl?: boolean;
+        clickToClose?: boolean;
+    }) {
+        // =>set defaults
+        if (!options.mode) options.mode = 'info';
+        if (!options.timeout) options.timeout = 3000;
+        if (!options.cssAnimationStyle) options.cssAnimationStyle = 'fade';
+        if (options.rtl === undefined) options.rtl = this.locale().getLangInfo()?.direction === 'rtl';
+        if (options.clickToClose === undefined) options.clickToClose = true;
+        // =>show notification
+        if (options.callback) {
+            Notify[options.mode](options.text, options.callback, {
+                cssAnimationStyle: options.cssAnimationStyle,
+                timeout: options.timeout,
+                rtl: options.rtl,
+                clickToClose: options.clickToClose,
+            });
+        } else {
+            Notify[options.mode](options.text, {
+                cssAnimationStyle: options.cssAnimationStyle,
+                timeout: options.timeout,
+                rtl: options.rtl,
+                clickToClose: options.clickToClose,
+            });
+        }
+
+    }
+    /********************************* */
+    confirm(options: {
+        title: string;
+        text: string;
+        rtl?: boolean;
+        type?: 'confirm' | 'prompt';
+        cssAnimationStyle?: NotifyCssAnimationStyle;
+
+        okButtonText?: string;
+        cancelButtonText?: string;
+        okButtonCallback?: (value?: string) => void;
+        cancelButtonCallback?: (value?: string) => void;
+        inputPlaceholder?: string;
+    }) {
+        // =>set defaults
+        if (options.rtl === undefined) options.rtl = this.locale().getLangInfo()?.direction === 'rtl';
+        if (!options.type) options.type = 'confirm';
+        if (!options.cssAnimationStyle) options.cssAnimationStyle = 'fade';
+        if (!options.okButtonText) options.okButtonText = this.locale().trans('common', 'ok');
+        if (!options.cancelButtonText) options.cancelButtonText = this.locale().trans('common', 'cancel');
+
+        // =>set confirm options
+        let confirmOptions: IConfirmOptions = {
+            rtl: options.rtl,
+            cssAnimationStyle: options.cssAnimationStyle as any,
+            backgroundColor: StrongFBHelper.notifyBackgroundColor(),
+            messageColor: StrongFBHelper.notifyTextColor(),
+            titleColor: StrongFBHelper.notifyTitleColor(),
+        }
+        // =>show confirm
+        if (options.type === 'confirm') {
+            Confirm.show(
+                options.title,
+                options.text,
+                options.okButtonText,
+                options.cancelButtonText,
+                options.okButtonCallback,
+                options.cancelButtonCallback,
+                confirmOptions,
+            );
+        } else if (options.type === 'prompt') {
+            Confirm.ask(
+                options.title,
+                options.text,
+                options.inputPlaceholder,
+                options.okButtonText,
+                options.cancelButtonText,
+                options.okButtonCallback,
+                options.cancelButtonCallback,
+                confirmOptions,
+            );
+        }
+    }
+    /********************************* */
+    async loadStyleLink(srcUrl: string) {
+        const head = document.getElementsByTagName('head')[0];
+        const style = document.createElement('link');
+        style.id = 'css-styling';
+        style.rel = 'stylesheet';
+        style.href = `${srcUrl}`;
+        head.appendChild(style);
+    }
+    /********************************* */
+    async loadStyleBlock(block: string) {
+        const head = document.getElementsByTagName('head')[0];
+        const style = document.createElement('style');
+        style.innerHTML = block;
+        head.appendChild(style);
+    }
 
 }

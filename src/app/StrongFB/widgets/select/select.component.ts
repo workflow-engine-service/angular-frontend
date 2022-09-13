@@ -11,7 +11,7 @@ import { takeUntil } from 'rxjs';
 export class StrongFBSelectWidgetComponent extends StrongFBBaseWidget<SelectSchema> {
 
     options: SelectOption[] = [];
-    @Output() ngModelChange = new EventEmitter<string | string[]>();
+    @Output() override ngModelChange = new EventEmitter<string | string[]>();
 
 
     override schema: SelectSchema;
@@ -24,7 +24,8 @@ export class StrongFBSelectWidgetComponent extends StrongFBBaseWidget<SelectSche
             if (!it) return;
             // =>load options
             this.loadOptions();
-        })
+        });
+        this.listenOnFormFieldChange('value');
 
     }
 
@@ -56,21 +57,20 @@ export class StrongFBSelectWidgetComponent extends StrongFBBaseWidget<SelectSche
         if (schema.fullWidth === undefined) schema.fullWidth = false;
         if (!schema.appearance) schema.appearance = 'filled';
         if (!schema.placeholder) schema.placeholder = '';
-
+        // =>if selected items
+        if (schema.value) {
+            this.changeEvent(schema.value);
+        }
 
         return schema;
     }
 
 
     changeEvent(event: string | string[]) {
-        // =>set value to form field
-        if (this.widgetHeader['_formFieldName']) {
-            this.widgetForm['_formFieldValues'][this.widgetHeader['_formFieldName']] = event;
-        }
-        // console.log('change:', event)
-        this.ngModelChange.emit(event);
+        this.schema.value = event;
+        this.updateFormField('value');
 
         if (!this.schema.change) return;
-        this.schema.change.call(this.widgetForm, event, this.widgetHeader);
+        this.schema.change.call(this.widgetForm, this.schema.value, this.widgetHeader);
     }
 }

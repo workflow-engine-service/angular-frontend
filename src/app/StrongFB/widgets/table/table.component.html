@@ -1,7 +1,7 @@
-<ng-container *ngIf="schema">
+<ng-container *ngIf="schema && show">
     <nb-card>
         <nb-card-body>
-            <table>
+            <table *ngIf="!isNotFoundEnabled()">
                 <thead>
                     <tr>
                         <th *ngFor="let col of schema.columns">
@@ -10,8 +10,16 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let row of displayRows; let rowIndex = index">
-                        <td *ngFor="let rowCol of schema.columns">
+                    <tr *ngFor="let row of displayRows; let rowIndex = index" [class.td-selectable]="schema.selectable"
+                        (click)="schema.selectable ? toggleSelectRow(rowIndex, !isRowSelected(rowIndex)) : undefined"
+                        [class.td-selected]="schema.selectable ? isRowSelected(rowIndex) : undefined">
+                        <td *ngFor="let rowCol of schema.columns;let colIndex = index"
+                            [class.td-has-checkbox]="colIndex == 0 && schema.selectable?.multiple">
+                            <!-- multiple select -->
+                            <ng-container *ngIf="colIndex == 0 && schema.selectable?.multiple">
+                                <nb-checkbox (checkedChange)="toggleSelectRow(rowIndex, $event)"
+                                    [checked]="isRowSelected(rowIndex)"></nb-checkbox>
+                            </ng-container>
                             <!-- string type -->
                             <div *ngIf="!rowCol.type || rowCol.type === 'string'">
                                 {{row[rowCol.name]}}
@@ -47,14 +55,14 @@
                 </tbody>
             </table>
             <!-- pagination -->
-            <div class="pagination" *ngIf="schema.mapApiPagination">
+            <div class="pagination" *ngIf="schema.mapApiPagination && schema.mapApiPagination.__pageCountResponse">
                 <!-- prev buttons -->
                 <nb-button-group shape="semi-round">
                     <button (click)="goToPage(1)" nbButtonToggle *ngIf="page > 2  && displayPages.first">
-                        <nb-icon icon="arrowhead-left-outline"></nb-icon>
+                        <nb-icon icon="arrowhead-left-outline" [class.rtl-icon]="isRtl"></nb-icon>
                     </button>
                     <button (click)="goToPage(page - 1)" nbButtonToggle *ngIf="page > 1 && displayPages.prev">
-                        <nb-icon icon="arrow-ios-back-outline"></nb-icon>
+                        <nb-icon icon="arrow-ios-back-outline" [class.rtl-icon]="isRtl"></nb-icon>
                     </button>
                     <ng-container *ngFor="let p of displayPages.pages">
                         <button *ngIf="p !== '...'" (click)="goToPage(p)" [pressed]="page== p"
@@ -65,14 +73,20 @@
                     <!-- next buttons -->
                     <button (click)="goToPage(page+1)" nbButtonToggle
                         *ngIf="page < schema.mapApiPagination.__pageCountResponse && displayPages.next">
-                        <nb-icon icon="arrow-ios-forward-outline"></nb-icon>
+                        <nb-icon icon="arrow-ios-forward-outline" [class.rtl-icon]="isRtl"></nb-icon>
                     </button>
                     <button (click)="goToPage(schema.mapApiPagination.__pageCountResponse)" nbButtonToggle
                         *ngIf="page < schema.mapApiPagination.__pageCountResponse - 1 && displayPages.last">
-                        <nb-icon icon="arrowhead-right-outline"></nb-icon>
+                        <nb-icon icon="arrowhead-right-outline" [class.rtl-icon]="isRtl"></nb-icon>
                     </button>
                 </nb-button-group>
 
+            </div>
+
+            <!-- not found -->
+            <div *ngIf="isNotFoundEnabled()" class="not-found">
+                <img *ngIf="schema.notFound.imageUrl" [src]="schema.notFound.imageUrl">
+                <p *ngIf="schema.notFound.html" [innerHtml]="schema.notFound.html"></p>
             </div>
         </nb-card-body>
     </nb-card>

@@ -10,7 +10,7 @@ import { RadioBoxSchema } from './radio-box-interfaces';
 export class StrongFBRadioBoxWidgetComponent extends StrongFBBaseWidget<RadioBoxSchema> {
 
     override schema: RadioBoxSchema;
-    @Output() ngModelChange = new EventEmitter<string | number>();
+    @Output() override ngModelChange = new EventEmitter<string | number>();
 
     override async onInit() {
         this.initSchema();
@@ -29,10 +29,12 @@ export class StrongFBRadioBoxWidgetComponent extends StrongFBBaseWidget<RadioBox
         // =>normalize schema
         this.schema = this.normalizeSchema(this.schema);
 
+        this.listenOnFormFieldChange('value');
+
     }
 
     normalizeSchema(schema: RadioBoxSchema) {
-        
+
         if (!schema.status) schema.status = 'primary';
         if (!schema.optionsDirection) schema.optionsDirection = 'column';
         if (!schema.options) schema.options = [];
@@ -43,12 +45,8 @@ export class StrongFBRadioBoxWidgetComponent extends StrongFBBaseWidget<RadioBox
 
 
     changeEvent(event: MouseEvent) {
-                // =>set value to form field
-                if (this.widgetHeader['_formFieldName']) {
-                    this.widgetForm['_formFieldValues'][this.widgetHeader['_formFieldName']] = this.schema.value;
-                }
-        
-        this.ngModelChange.emit(this.schema.value);
+        this.updateFormField('value');
+
         if (!this.schema.change) return;
         this.schema.change.call(this.widgetForm, event, this.widgetHeader);
     }
